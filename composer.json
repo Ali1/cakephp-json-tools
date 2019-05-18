@@ -1,0 +1,38 @@
+{
+    "name": "ali1/cakephp-json-tools",
+    "description": "CakePHP Plugin to help with configuring json responses from the controller, without templates",
+    "type": "cakephp-plugin",
+    "keywords":[
+        "cakephp",
+        "plugin",
+        "security",
+        "ajax"
+    ],
+    "homepage": "https://github.com/ali1/cakephp-json-tools",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ali Bakir",
+            "homepage": "https://github.com/ali1/"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "cakephp/cakephp": "~3.0",
+        "mockery/mockery": "0.9.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "JsonTools\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JsonTools\\Test\\": "tests",
+            "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    }
+}
