@@ -21,6 +21,16 @@ class JsonComponent extends Component
     private $Controller;
 
     /**
+     * @var bool whether setError should also set the HTTP status to 400 Bad Request by default
+     */
+    public $setHttpErrorOnError = false;
+
+    /**
+     * @var bool true: setError would result in error=true, and message=msg. false: setError would result in error=message and message=message
+     */
+    public $errorMessageInErrorKey = false;
+
+    /**
      * @inheritDoc
      */
     public function __construct(ComponentRegistry $registry, array $config = [])
@@ -172,9 +182,8 @@ class JsonComponent extends Component
      */
     public function entityErrorVars($entity)
     {
-        $this->Controller->set('error', true);
-        $this->Controller->set('field_errors', $entity->getErrors());
-        $this->Controller->set('message', $this->generateErrorMessage($entity));
+        $this->set('field_errors', $entity->getErrors());
+        $this->setError($this->generateErrorMessage($entity));
     }
 
     /**
@@ -229,12 +238,23 @@ class JsonComponent extends Component
      * $this->Json->set shortcut
      *
      * @param string $message
+     * @param bool|null $httpError true to also return a HTTP 400 Bad Request
      *
      * @return void
      */
-    public function setError(string $message)
+    public function setError(string $message, ?bool $httpError = null)
     {
-        $this->set('error', true);
+        if ($httpError === null) {
+            $httpError = $this->setHttpErrorOnError;
+        }
+        if ($httpError) {
+            $this->getController()->setResponse($this->getController()->getResponse()->withStatus(400, 'Bad request'));
+        }
+        if ($this->errorMessageInErrorKey) {
+            $this->set('error', $message);
+        } else {
+            $this->set('error', true);
+        }
         $this->set('message', $message);
     }
 
