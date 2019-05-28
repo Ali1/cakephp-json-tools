@@ -15,7 +15,7 @@ A CakePHP plugin to assist with creating Json responses from controllers.
 
 * Composer
 * CakePHP 3.7+
-* PHP 7.0+
+* PHP 7.1+
 
 ### Installation
 

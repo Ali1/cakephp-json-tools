@@ -5,7 +5,8 @@ use Cake\Routing\Router;
 use Cake\Utility\Inflector;
 
 /**
- * Trait Route
+ * The Route trait give entities shortcuts notably $entity->route for use with Url::build($entity->route)
+ * The route action can be overwritten by defining function routeActionAndId in the Entity class
  *
  * @package App\Model\Entity\Traits
  *
