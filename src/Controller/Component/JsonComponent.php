@@ -91,8 +91,6 @@ class JsonComponent extends Component
             $serialize = array_merge($serialize, $this->Controller->viewVars['_serialize']);
         }
         $this->Controller->set('_serialize', $serialize);
-
-        return $serialize;
     }
 
     /**
