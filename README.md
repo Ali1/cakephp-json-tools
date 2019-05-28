@@ -8,6 +8,9 @@
 
 A CakePHP plugin to assist with creating Json responses from controllers. 
 
+Unlike other json tools out there, Json Tools has been created to be used by projects 
+where only a few actions might need to respond in Json.
+
 ### Features
 * A component that quickly lets you set up ajax methods.
 
