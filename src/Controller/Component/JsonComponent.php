@@ -85,10 +85,8 @@ class JsonComponent extends Component
         }
         $serialize = array_keys($defaults);
         // accessing viewVars in this way is depreciated and methods to access them have not been developed yet.
-        /** @noinspection PhpDeprecationInspection */
-        if (!empty($this->Controller->viewVars['_serialize']) && is_array($this->Controller->viewVars['_serialize'])) {
-            /** @noinspection PhpDeprecationInspection */
-            $serialize = array_merge($serialize, $this->Controller->viewVars['_serialize']);
+        if (!empty($this->Controller->createView()->get('_serialize')) && is_array($this->Controller->createView()->get('_serialize'))) {
+            $serialize = array_merge($serialize, $this->Controller->createView()->get('_serialize'));
         }
         $this->Controller->set('_serialize', $serialize);
     }
@@ -177,8 +175,7 @@ class JsonComponent extends Component
             $builder->setTemplate($template);
         }
         $builder->setLayout(false);
-        /** @noinspection PhpDeprecationInspection */
-        $this->Controller->set('content', $builder->build($this->Controller->viewVars)->render());
+        $this->Controller->set('content', $this->Controller->createView()->render());
     }
 
     /**
@@ -200,9 +197,10 @@ class JsonComponent extends Component
         } else {
             $keys = [$name];
         }
-        /** @noinspection PhpDeprecationInspection */
-        $serialize = array_merge($this->Controller->viewVars['_serialize'], $keys);
-        $this->Controller->set('_serialize', $serialize);
+        if ($this->Controller->createView()->get('_serialize')) {
+            $keys = array_merge($this->Controller->createView()->get('_serialize'), $keys);
+        }
+        $this->Controller->set('_serialize', $keys);
     }
 
     /**
