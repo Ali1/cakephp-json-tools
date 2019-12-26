@@ -174,7 +174,7 @@ class JsonComponent extends Component
         if ($template) {
             $builder->setTemplate($template);
         }
-        $builder->setLayout(false);
+        $builder->disableAutoLayout();
         $this->Controller->set('content', $this->Controller->createView()->render());
     }
 
