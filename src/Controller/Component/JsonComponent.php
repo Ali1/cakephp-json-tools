@@ -101,9 +101,9 @@ class JsonComponent extends Component
      */
     public function isJsonSubmit(bool $autoPrepare = true): bool
     {
-        if ($this->Controller->request->is(['post', 'put'])
-            && $this->Controller->request->is('ajax')
-            && ($this->Controller->request->is('json')
+        if ($this->Controller->getRequest()->is(['post', 'put'])
+            && $this->Controller->getRequest()->is('ajax')
+            && ($this->Controller->getRequest()->is('json')
                 || $this->Controller->viewBuilder()->getClassName() === 'Cake\View\JsonView' // if $this->Json->forceJson has been used
             )
         ) {
