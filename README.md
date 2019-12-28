@@ -17,8 +17,8 @@ where only a few actions might need to respond in Json.
 ### Requirements
 
 * Composer
-* CakePHP 3.7+
-* PHP 7.1+
+* CakePHP 4.0+ (see releases for working 3.7+ release)
+* PHP 7.2+
 
 ### Installation
 
