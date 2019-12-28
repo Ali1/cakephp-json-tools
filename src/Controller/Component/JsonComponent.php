@@ -63,7 +63,7 @@ class JsonComponent extends Component
 
     /**
      * Sets the boilerplate Json view vars. With no further action, will send a message of OK.
-     * The view variables set are consistent with the json RequestHandler i.e. the _serialize viewVar is set.
+     * The view variables set are consistent with the json RequestHandler i.e. the serialize viewOption is set.
      * Will not replace already viewVars that have been already set.
      * This should usually be executed in all your json actions, but many of the other component methods will execute it for you e.g. $this->Json->requireJsonSubmit
      *
@@ -84,11 +84,10 @@ class JsonComponent extends Component
             }
         }
         $serialize = array_keys($defaults);
-        // accessing viewVars in this way is depreciated and methods to access them have not been developed yet.
-        if (!empty($this->Controller->createView()->get('_serialize')) && is_array($this->Controller->createView()->get('_serialize'))) {
-            $serialize = array_merge($serialize, $this->Controller->createView()->get('_serialize'));
+        if (is_array($this->Controller->viewBuilder()->getOption('serialize'))) {
+            $serialize = array_merge($serialize, $this->Controller->viewBuilder()->getOption('serialize'));
         }
-        $this->Controller->set('_serialize', $serialize);
+        $this->Controller->viewBuilder()->setOption('serialize', $serialize);
     }
 
     /**
@@ -180,7 +179,7 @@ class JsonComponent extends Component
 
     /**
      * When dealing with json requests, use $this->Json->set rather than $this->set in your controller as the former
-     *   method will also ensure the _serialize view var contains the key, hence ensure that the json response contains the
+     *   method will also ensure the serialize view Option (previously _serialize viewVar) contains the key, hence ensure that the json response contains the
      *   variable you are setting.
      *
      * @param string|array $name A string or an array of data.
@@ -193,14 +192,14 @@ class JsonComponent extends Component
     {
         $this->Controller->set($name, $value);
         if (is_array($name)) {
-            $keys = $name;
+            $serialize = $name;
         } else {
-            $keys = [$name];
+            $serialize = [$name];
         }
-        if ($this->Controller->createView()->get('_serialize')) {
-            $keys = array_merge($this->Controller->createView()->get('_serialize'), $keys);
+        if (is_array($this->Controller->viewBuilder()->getOption('serialize'))) {
+            $serialize = array_merge($serialize, $this->Controller->viewBuilder()->getOption('serialize'));
         }
-        $this->Controller->set('_serialize', $keys);
+        $this->Controller->viewBuilder()->setOption('serialize', $serialize);
     }
 
     /**
