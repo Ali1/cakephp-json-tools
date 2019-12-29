@@ -56,46 +56,12 @@ class AppController extends Controller
 }
 ```
 
-## Usage
+## Usage (in controller methods that may need to output Json)
 
-### How to use JsonTools in methods that need to output Json
+### Understanding the boiler plate Json output
 
-#### Priming the method with boiler-plate Json output
+This component primes ResponseHandler to output something that looks like this:
 
-```php
-// All Json actions where you want to use this component should have one of the following lines to get the benefits of this component
-
-/**
-* The most basic. Will set the boiler-plate variables (see below) that can be processed by ResponseHandler should there
-* be a json request.
-*/
-$this->Json->prepareVars();
-
-
-/**
-* Will return true if is Json and is POST/PUT, otherwise false
-* You don't need to run prepareVars() if you use this line
-*/
-if($this->Json->isJsonSubmit()){}
-
-
-/**
-* will force the output to be Json regardless of HTTP request headers
-* You don't need to run prepareVars() if you use this line
-*/
-$this->Json->forceJson(); // will force the output to be Json regardless of HTTP request headers
-
-
-/**
-* throw exception if request is not Json or not POST/PUT
-* You don't need to run prepareVars() if you use this line
-*/
-$this->Json->requireJsonSubmit(); // throw exception if request is not Json or not POST/PUT
-```
-
-#### Json output
-
- The boiler-plate Json output is this:
 ```php
 [
     'error' => false,
@@ -105,13 +71,51 @@ $this->Json->requireJsonSubmit(); // throw exception if request is not Json or n
     'content' => null,
 ];
 ```
-```
+
 Which corresponds to a json output of:
 ```json
 {"error": false, "field_errors": {}, "message": "OK", "_redirect": false, "content": false }
 ```
 
-These keys could be overwritten later in your method using one of these methods
+Your controller method can then override these keys or add new ones easily using this component.
+
+### Priming the method with boiler-plate Json output
+
+```php
+// All Json actions where you want to use this component should have one of the following lines
+
+/**
+* The most basic priming. Will set the boiler-plate variables (see below) that can be processed by ResponseHandler
+* should there be a json request. If the request is not XHR/JSON, then this method would not have an effect.
+*/
+$this->Json->prepareVars();
+
+
+/**
+* Will return true if is Json and is POST/PUT, otherwise false
+* Can replace something like $this->getRequest()->is(['post', 'put']) that is often used to check if form is submitted.
+* You don't need to run prepareVars() if you use this line
+*/
+if($this->Json->isJsonSubmit()){}
+
+
+/**
+* Will force the output to be Json regardless of HTTP request headers
+* You don't need to run prepareVars() if you use this line
+*/
+$this->Json->forceJson(); // will force the output to be Json regardless of HTTP request headers
+
+
+/**
+* Throw exception if request is not Json or not POST/PUT
+* You don't need to run prepareVars() if you use this line
+*/
+$this->Json->requireJsonSubmit(); // throw exception if request is not Json or not POST/PUT
+```
+
+### Setting the JSON output
+
+Boiler plate output keys (see above) could be overwritten later in your method using one of these methods
 ```php
 $this->Json->set('data', $data); // add a new key called data
 $this->Json->set('field_errors', $errors); // replace a key
@@ -121,7 +125,7 @@ $this->Json->redirect(['action' => 'index']); // sets _redirect key to a URL (fo
 $this->Json->entityErrorVars($user); // change the Json output to error: true, and message: a list of validation errors as a string (e.g. Username: Too long, Email: Incorrect email address)
 ```
 
-### Example controller
+## Example controller
 
 ```php
 // UsersController.php
@@ -174,7 +178,7 @@ $this->Json->entityErrorVars($user); // change the Json output to error: true, a
     }
 ```
 
-### Example AJAX form
+## Example AJAX form
 
 This is an example form that corresponds to the ajaxUpdateUser method above.
 
