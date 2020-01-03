@@ -211,7 +211,7 @@ class JsonComponent extends Component
      *      Produce a string with human readable list of validation errors as the json output 'message' key
      *      Give field_errors in the json with an array of validation errors
      *
-     * @param \Cake\ORM\Entity|\Cake\Form\Form $entity
+     * @param \Cake\Datasource\EntityInterface|\Cake\Form\Form $entity
      *
      * @return void
      */
