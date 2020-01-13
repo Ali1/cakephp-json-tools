@@ -271,7 +271,7 @@ window.ajax_submit = function(form, config){
                     if (data._redirect) {
                         window.location = data._redirect;
                     }
-                    if (mode === 'refresh') {
+                    else if (mode === 'refresh') {
                         location.reload();
                     } else if (mode === 'redirect') {
                         window.location = config.success;
