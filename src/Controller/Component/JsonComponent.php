@@ -74,7 +74,7 @@ class JsonComponent extends Component
         $defaults = [
             'error' => false,
             'field_errors' => [],
-            'message' => 'OK',
+            'message' => '',
             '_redirect' => false,
             'content' => null,
         ];

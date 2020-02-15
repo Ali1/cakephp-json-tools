@@ -66,7 +66,7 @@ This component primes ResponseHandler to output something that looks like this:
 [
     'error' => false,
     'field_errors' => [],
-    'message' => 'OK',
+    'message' => '',
     '_redirect' => false,
     'content' => null,
 ];
@@ -136,7 +136,7 @@ $this->Json->entityErrorVars($user); // change the Json output to error: true, a
         It will also prepare boiler plate variables that can be handled by RequestHandler
                     'error' => false,
                     'field_errors' => [],
-                    'message' => 'OK',
+                    'message' => '',
                     '_redirect' => false,
                     'content' => null,
         In other words, the action output will be {"error": false, "field_errors": {}, "message": "OK", "_redirect": false, "content": false }
