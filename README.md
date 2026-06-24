@@ -1,6 +1,6 @@
 # CakePHP Json Tools Plugin
 
-[![Framework](https://img.shields.io/badge/Framework-CakePHP%203.x-orange.svg)](http://cakephp.org)
+[![Framework](https://img.shields.io/badge/Framework-CakePHP%205.x-orange.svg)](http://cakephp.org)
 [![license](https://img.shields.io/github/license/ali1/cakephp-json-tools.svg?maxAge=2592000)](https://github.com/LeWestopher/cakephp-monga/blob/master/LICENSE)
 [![Github All Releases](https://img.shields.io/packagist/dt/ali1/cakephp-brute-force-protection.svg?maxAge=2592000)](https://packagist.org/packages/ali1/cakephp-brute-force-protection)
 [![Travis](https://img.shields.io/travis/ali1/cakephp-brute-force-protection.svg?maxAge=2592000)](https://travis-ci.org/ali1/cakephp-brute-force-protection)
@@ -14,14 +14,15 @@ The Json Tools component makes creating these a breeze.
 
 ## Features
 * A component that quickly lets you set up ajax methods.
-* Works with CakePHP's ResponseHandler so you don't have to
+* Works with CakePHP's JsonView so you don't have to
 * Can be used in methods that sometimes output Html and other times Json depending on request headers, just like normal CakePHP behavior
+* Adds optional debug context to JSON errors for authenticated Cake session users
 
 ## Requirements
 
 * Composer
-* CakePHP 4.0+ (see releases for working 3.7+ release)
-* PHP 7.2+
+* CakePHP 5.0+
+* PHP 8.2+
 
 ## Installation
 
@@ -60,13 +61,14 @@ class AppController extends Controller
 
 ### Understanding the boiler plate Json output
 
-This component primes ResponseHandler to output something that looks like this:
+This component primes JsonView to output something that looks like this:
 
 ```php
 [
     'error' => false,
     'field_errors' => [],
     'message' => '',
+    'debug' => [],
     '_redirect' => false,
     'content' => null,
 ];
@@ -74,7 +76,7 @@ This component primes ResponseHandler to output something that looks like this:
 
 Which corresponds to a json output of:
 ```json
-{"error": false, "field_errors": {}, "message": "OK", "_redirect": false, "content": false }
+{"error": false, "field_errors": [], "message": "", "debug": [], "_redirect": false, "content": null}
 ```
 
 Your controller method can then override these keys or add new ones easily using this component.
@@ -85,7 +87,7 @@ Your controller method can then override these keys or add new ones easily using
 // All Json actions where you want to use this component should have one of the following lines
 
 /**
-* The most basic priming. Will set the boiler-plate variables (see below) that can be processed by ResponseHandler
+* The most basic priming. Will set the boiler-plate variables (see below) that can be processed by JsonView
 * should there be a json request. If the request is not XHR/JSON, then this method would not have an effect.
 */
 $this->Json->prepareVars();
@@ -137,9 +139,10 @@ $this->Json->entityErrorVars($user); // change the Json output to error: true, a
                     'error' => false,
                     'field_errors' => [],
                     'message' => '',
+                    'debug' => [],
                     '_redirect' => false,
                     'content' => null,
-        In other words, the action output will be {"error": false, "field_errors": {}, "message": "OK", "_redirect": false, "content": false }
+        In other words, the action output will be {"error": false, "field_errors": [], "message": "", "debug": [], "_redirect": false, "content": null}
         All of these variables can be overridden in the action if errors do develop or example
         */
         $this->Json->requireJsonSubmit();

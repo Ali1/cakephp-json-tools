@@ -6,6 +6,7 @@ namespace JsonTools\Test\TestCase\Controller\Component;
 
 use Cake\Http\ServerRequest;
 use Cake\TestSuite\TestCase;
+use Cake\View\JsonView;
 use TestApp\Controller\JsonComponentTestController;
 
 class JsonComponentTest extends TestCase
@@ -30,9 +31,10 @@ class JsonComponentTest extends TestCase
     {
         $this->invokeAction('forceJson');
 
-        $this->assertSame('Json', $this->Controller->viewBuilder()->getClassName());
+        $this->assertSame(JsonView::class, $this->Controller->viewBuilder()->getClassName());
+        $this->assertSame('application/json', $this->Controller->getResponse()->getType());
         $this->assertSame(
-            ['answer', 'error', 'field_errors', 'message', '_redirect', 'content'],
+            ['answer', 'error', 'field_errors', 'message', 'debug', '_redirect', 'content'],
             $this->Controller->viewBuilder()->getOption('serialize')
         );
 
@@ -40,6 +42,7 @@ class JsonComponentTest extends TestCase
             'error' => false,
             'field_errors' => [],
             'message' => '',
+            'debug' => [],
             '_redirect' => false,
             'content' => null,
             'answer' => 42,
@@ -54,6 +57,7 @@ class JsonComponentTest extends TestCase
             'error' => false,
             'field_errors' => [],
             'message' => '',
+            'debug' => [],
             '_redirect' => false,
             'content' => null,
             'answer' => 42,
@@ -78,6 +82,7 @@ class JsonComponentTest extends TestCase
             'error' => false,
             'field_errors' => [],
             'message' => '',
+            'debug' => [],
             '_redirect' => false,
             'content' => null,
             'is_json_submit' => true,
@@ -93,6 +98,7 @@ class JsonComponentTest extends TestCase
 
         $this->assertTrue($json['error']);
         $this->assertSame('Something went wrong', $json['message']);
+        $this->assertSame([], $json['debug']);
     }
 
     public function testSetErrorCanSetHttpBadRequestStatus(): void
@@ -104,6 +110,26 @@ class JsonComponentTest extends TestCase
 
         $this->assertTrue($json['error']);
         $this->assertSame('Something went wrong', $json['message']);
+        $this->assertSame([], $json['debug']);
+    }
+
+    public function testSetErrorAddsDebugContextForAuthenticatedSession(): void
+    {
+        $session = $this->Controller->getRequest()->getSession();
+        $session->write('Auth.id', 10);
+        $session->write('Auth.username', 'ali');
+        $session->write('Auth.first_name', 'Ali');
+        $session->write('Auth.last_name', 'Bakir');
+
+        $this->invokeAction('httpError');
+
+        $debug = $this->renderJson()['debug'];
+
+        $this->assertSame(400, $debug['status']);
+        $this->assertSame('JsonComponentTest / httpError', $debug['page']);
+        $this->assertSame('GET /', $debug['request']);
+        $this->assertSame('Ali Bakir', $debug['user']);
+        $this->assertArrayHasKey('time', $debug);
     }
 
     public function testSetErrorCanMirrorMessageIntoErrorKey(): void
@@ -130,7 +156,11 @@ class JsonComponentTest extends TestCase
 
     private function invokeAction(string $action): void
     {
-        $this->Controller->setRequest($this->Controller->getRequest()->withParam('action', $action));
+        $this->Controller->setRequest(
+            $this->Controller->getRequest()
+                ->withParam('controller', 'JsonComponentTest')
+                ->withParam('action', $action)
+        );
         $this->Controller->invokeAction($this->Controller->getAction(), []);
     }
 

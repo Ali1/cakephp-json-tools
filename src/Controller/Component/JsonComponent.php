@@ -7,10 +7,13 @@ namespace JsonTools\Controller\Component;
 use Cake\Controller\Controller;
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
+use Cake\Datasource\EntityInterface;
+use Cake\Form\Form;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Routing\Router;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
+use Cake\View\JsonView;
 
 /**
  * Class JsonComponent
@@ -79,6 +82,7 @@ class JsonComponent extends Component
             'error' => false,
             'field_errors' => [],
             'message' => '',
+            'debug' => [],
             '_redirect' => false,
             'content' => null,
         ];
@@ -91,7 +95,7 @@ class JsonComponent extends Component
         if (is_array($this->Controller->viewBuilder()->getOption('serialize'))) {
             $serialize = array_merge($serialize, $this->Controller->viewBuilder()->getOption('serialize'));
         }
-        $this->Controller->viewBuilder()->setOption('serialize', $serialize);
+        $this->Controller->viewBuilder()->setOption('serialize', array_values(array_unique($serialize)));
     }
 
     /**
@@ -107,7 +111,7 @@ class JsonComponent extends Component
         if ($this->Controller->getRequest()->is(['post', 'put'])
             && $this->Controller->getRequest()->is('ajax')
             && ($this->Controller->getRequest()->is('json')
-                || in_array($this->Controller->viewBuilder()->getClassName(), ['Json', 'Cake\View\JsonView'], true)
+                || in_array($this->Controller->viewBuilder()->getClassName(), ['Json', JsonView::class], true)
             )
         ) {
             if ($autoPrepare) {
@@ -127,7 +131,8 @@ class JsonComponent extends Component
      */
     public function forceJson(): void
     {
-        $this->Controller->viewBuilder()->setClassName('Json');
+        $this->Controller->viewBuilder()->setClassName(JsonView::class);
+        $this->Controller->setResponse($this->Controller->getResponse()->withType('application/json'));
         $this->prepareVars();
     }
 
@@ -179,6 +184,8 @@ class JsonComponent extends Component
         }
         $builder->disableAutoLayout();
         $this->Controller->set('content', $this->Controller->createView()->render());
+        $builder->setClassName(JsonView::class);
+        $this->Controller->setResponse($this->Controller->getResponse()->withType('application/json'));
     }
 
     /**
@@ -203,7 +210,7 @@ class JsonComponent extends Component
         if (is_array($this->Controller->viewBuilder()->getOption('serialize'))) {
             $serialize = array_merge($serialize, $this->Controller->viewBuilder()->getOption('serialize'));
         }
-        $this->Controller->viewBuilder()->setOption('serialize', $serialize);
+        $this->Controller->viewBuilder()->setOption('serialize', array_values(array_unique($serialize)));
     }
 
     /**
@@ -236,14 +243,17 @@ class JsonComponent extends Component
     {
         if (is_array($entity)) {
             $entityErrors = $entity; // send an array of errors e.g. in manual controller validation
-        } elseif (!$entity->getErrors()) {
-            return '';
-        } else {
+        } elseif ($entity instanceof EntityInterface || $entity instanceof Form) {
+            if (!$entity->getErrors()) {
+                return '';
+            }
             $entityErrors = $entity->getErrors();
+        } else {
+            return '';
         }
         $error_msg = '';
 
-        $errorMessage = function ($key, $errors) {
+        $errorMessage = function ($key, $errors): string {
             $error_msg = Inflector::humanize($key) . ':';
             foreach ($errors as $error) {
                 $error_msg .= ' ' . $error . ',';
@@ -297,6 +307,7 @@ class JsonComponent extends Component
             $this->set('error', true);
         }
         $this->set('message', $message);
+        $this->set('debug', $this->errorDebugContext($httpError ? 400 : null));
     }
 
     /**
@@ -309,5 +320,33 @@ class JsonComponent extends Component
     public function setMessage(string $message): void
     {
         $this->set('message', $message);
+    }
+
+    /**
+     * Context for JSON errors shown to authenticated users.
+     *
+     * @param int|null $status HTTP status code, when one was set by the component.
+     * @return array<string, mixed>
+     */
+    private function errorDebugContext(?int $status = null): array
+    {
+        $request = $this->Controller->getRequest();
+        $session = $request->getSession();
+        if (!$session->read('Auth.id') && !$session->read('Auth.username')) {
+            return [];
+        }
+
+        $controller = (string)$request->getParam('controller');
+        $action = (string)$request->getParam('action');
+        $username = (string)$session->read('Auth.username');
+        $displayName = trim((string)$session->read('Auth.first_name') . ' ' . (string)$session->read('Auth.last_name'));
+
+        return array_filter([
+            'status' => $status,
+            'page' => $controller && $action ? $controller . ' / ' . $action : '',
+            'request' => strtoupper($request->getMethod()) . ' ' . $request->getRequestTarget(),
+            'user' => $displayName ?: $username,
+            'time' => date('Y-m-d H:i:s T'),
+        ], static fn($value) => $value !== null && $value !== '');
     }
 }
