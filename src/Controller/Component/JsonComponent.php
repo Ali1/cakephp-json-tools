@@ -1,6 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace JsonTools\Controller\Component;
 
+use Cake\Controller\Controller;
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
 use Cake\Http\Exception\BadRequestException;
@@ -18,17 +22,17 @@ class JsonComponent extends Component
     /**
      * @var \Cake\Controller\Controller
      */
-    private $Controller;
+    private Controller $Controller;
 
     /**
      * @var bool whether setError should also set the HTTP status to 400 Bad Request by default
      */
-    private $httpErrorStatusOnError = false;
+    private bool $httpErrorStatusOnError = false;
 
     /**
      * @var bool true: setError would result in error=true, and message=msg. false: setError would result in error=message and message=message
      */
-    private $errorMessageInErrorKey = false;
+    private bool $errorMessageInErrorKey = false;
 
     /**
      * @inheritDoc
@@ -79,7 +83,7 @@ class JsonComponent extends Component
             'content' => null,
         ];
         foreach ($defaults as $key => $value) {
-            if (!isset($this->viewVars[$key])) {
+            if (!array_key_exists($key, $this->Controller->viewBuilder()->getVars())) {
                 $this->Controller->set($key, $value);
             }
         }
@@ -103,7 +107,7 @@ class JsonComponent extends Component
         if ($this->Controller->getRequest()->is(['post', 'put'])
             && $this->Controller->getRequest()->is('ajax')
             && ($this->Controller->getRequest()->is('json')
-                || $this->Controller->viewBuilder()->getClassName() === 'Cake\View\JsonView' // if $this->Json->forceJson has been used
+                || in_array($this->Controller->viewBuilder()->getClassName(), ['Json', 'Cake\View\JsonView'], true)
             )
         ) {
             if ($autoPrepare) {
@@ -123,7 +127,7 @@ class JsonComponent extends Component
      */
     public function forceJson(): void
     {
-        $this->Controller->RequestHandler->renderAs($this->Controller, 'json');
+        $this->Controller->viewBuilder()->setClassName('Json');
         $this->prepareVars();
     }
 
@@ -192,7 +196,7 @@ class JsonComponent extends Component
     {
         $this->Controller->set($name, $value);
         if (is_array($name)) {
-            $serialize = $name;
+            $serialize = array_keys($name);
         } else {
             $serialize = [$name];
         }
@@ -233,7 +237,7 @@ class JsonComponent extends Component
         if (is_array($entity)) {
             $entityErrors = $entity; // send an array of errors e.g. in manual controller validation
         } elseif (!$entity->getErrors()) {
-            return false;
+            return '';
         } else {
             $entityErrors = $entity->getErrors();
         }
@@ -285,7 +289,7 @@ class JsonComponent extends Component
             $httpError = $this->httpErrorStatusOnError;
         }
         if ($httpError) {
-            $this->getController()->setResponse($this->getController()->getResponse()->withStatus(400, 'Bad request'));
+            $this->Controller->setResponse($this->Controller->getResponse()->withStatus(400));
         }
         if ($this->errorMessageInErrorKey) {
             $this->set('error', $message);

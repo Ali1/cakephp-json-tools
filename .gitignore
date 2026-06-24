@@ -3,3 +3,4 @@ vendor
 vendor/
 .idea
 composer.lock
+.phpunit.cache/

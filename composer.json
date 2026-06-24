@@ -17,12 +17,13 @@
         }
     ],
     "require": {
-        "php": ">=7.2",
-        "cakephp/cakephp": "~4.0",
-        "mockery/mockery": "0.9.*"
+        "php": "^8.2",
+        "cakephp/cakephp": "^5.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "cakephp/cakephp-codesniffer": "^5.0",
+        "mockery/mockery": "^1.6",
+        "phpunit/phpunit": "^10.5 || ^11.0"
     },
     "autoload": {
         "psr-4": {
@@ -32,7 +33,16 @@
     "autoload-dev": {
         "psr-4": {
             "JsonTools\\Test\\": "tests",
+            "TestApp\\": "tests/TestApp/src",
             "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }
