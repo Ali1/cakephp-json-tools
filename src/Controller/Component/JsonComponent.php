@@ -108,9 +108,11 @@ class JsonComponent extends Component
      */
     public function isJsonSubmit(bool $autoPrepare = true): bool
     {
-        if ($this->Controller->getRequest()->is(['post', 'put'])
-            && $this->Controller->getRequest()->is('ajax')
-            && ($this->Controller->getRequest()->is('json')
+        $request = $this->Controller->getRequest();
+        if ($request->is(['get', 'post', 'put'])
+            && $request->is('ajax')
+            && ($request->is('json')
+                || $request->accepts('application/json')
                 || in_array($this->Controller->viewBuilder()->getClassName(), ['Json', JsonView::class], true)
             )
         ) {
