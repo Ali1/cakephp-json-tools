@@ -35,6 +35,9 @@ Configure::write('App', [
     'namespace' => 'TestApp',
     'encoding' => 'UTF-8',
     'fullBaseUrl' => 'http://localhost',
+    'paths' => [
+        'templates' => [TEST_APP . 'templates' . DS],
+    ],
 ]);
 Configure::write('debug', true);
 

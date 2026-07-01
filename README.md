@@ -283,7 +283,7 @@ window.ajax_submit = function(form, config){
                         config.success(data, this); // pass form back
                     } else if (mode === 'html') { // load HTML mode
                         $('.blockUI.blockOverlay').parent().unblock(); // take care of any blocked UI
-                        $(config.success).html(data);
+                        $(config.success).html(data.content || '');
                     } else { // do nothing mode
                         $('.blockUI.blockOverlay').parent().unblock(); // take care of any blocked UI
                     }

@@ -40,6 +40,12 @@ class JsonComponentTestController extends Controller
         $this->Json->set('is_json_submit', $isJsonSubmit);
     }
 
+    public function sendContentWithoutPrepare(): void
+    {
+        $this->set('name', 'Ali');
+        $this->Json->sendContent('/JsonComponentTest/card');
+    }
+
     public function defaultError(): void
     {
         $this->Json->forceJson();

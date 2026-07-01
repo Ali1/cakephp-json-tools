@@ -179,6 +179,7 @@ class JsonComponent extends Component
      */
     public function sendContent($template = null): void
     {
+        $this->prepareVars();
         $builder = $this->Controller->viewBuilder();
         $builder->getTemplatePath();
         if ($template) {

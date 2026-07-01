@@ -89,6 +89,28 @@ class JsonComponentTest extends TestCase
         ], $this->renderJson());
     }
 
+    public function testSendContentPreparesDefaultsAndSerializesRenderedContent(): void
+    {
+        $this->invokeAction('sendContentWithoutPrepare');
+
+        $this->assertSame(JsonView::class, $this->Controller->viewBuilder()->getClassName());
+        $this->assertSame('application/json', $this->Controller->getResponse()->getType());
+        $this->assertSame(
+            ['error', 'field_errors', 'message', 'debug', '_redirect', 'content'],
+            $this->Controller->viewBuilder()->getOption('serialize')
+        );
+
+        $json = $this->renderJson();
+        $this->assertEquals([
+            'error' => false,
+            'field_errors' => [],
+            'message' => '',
+            'debug' => [],
+            '_redirect' => false,
+        ], array_diff_key($json, ['content' => true]));
+        $this->assertSame('<p>Hello Ali</p>', trim($json['content']));
+    }
+
     public function testSetErrorUsesMessageAndBooleanErrorByDefault(): void
     {
         $this->invokeAction('defaultError');
