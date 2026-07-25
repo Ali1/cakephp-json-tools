@@ -24,6 +24,107 @@ The Json Tools component makes creating these a breeze.
 * CakePHP 5.0+
 * PHP 8.2+
 
+## Upgrading to 6.0.0 (breaking changes)
+
+6.0.0 contains no new features. It applies the full coding standard to the
+published API. Two sniffs that were previously excluded because satisfying them
+breaks backward compatibility are now enforced, so the trait name and five
+method signatures below have changed.
+
+### 1. The `Route` trait is now `RouteTrait`
+
+`JsonTools\Model\Entity\Traits\Route` has been renamed to
+`JsonTools\Model\Entity\Traits\RouteTrait`, and its file moved from
+`src/Model/Entity/Traits/Route.php` to `src/Model/Entity/Traits/RouteTrait.php`.
+Behaviour is unchanged. Any entity that uses the trait must update its import,
+or it will fatal with "Trait not found".
+
+Before:
+
+```php
+use JsonTools\Model\Entity\Traits\Route;
+
+class Appointment extends Entity
+{
+    use Route;
+}
+```
+
+After:
+
+```php
+use JsonTools\Model\Entity\Traits\RouteTrait;
+
+class Appointment extends Entity
+{
+    use RouteTrait;
+}
+```
+
+If you aliased the import (`use ... Route as SomethingElse;`) only the imported
+class name changes; the alias can stay.
+
+### 2. Five `JsonComponent` methods now have native parameter types
+
+These methods were previously untyped, with the accepted types documented only
+in their `@param` docblocks. The native types are now declared, so passing
+anything outside them throws a `TypeError` instead of failing later (or
+silently) inside the method.
+
+| Method | 5.x signature | 6.0.0 signature |
+| --- | --- | --- |
+| `redirect()` | `redirect($url)` | `redirect(array\|string\|null $url)` |
+| `sendContent()` | `sendContent($template = null)` | `sendContent(?string $template = null)` |
+| `set()` | `set($name, $value = null)` | `set(array\|string $name, mixed $value = null)` |
+| `entityErrorVars()` | `entityErrorVars($entity)` | `entityErrorVars(EntityInterface\|Form $entity)` |
+| `generateErrorMessage()` | `generateErrorMessage($entity)` | `generateErrorMessage(EntityInterface\|Form\|array $entity)` |
+
+`EntityInterface` is `\Cake\Datasource\EntityInterface` and `Form` is
+`\Cake\Form\Form`.
+
+What now throws `TypeError` that previously did not:
+
+* `redirect()` — anything that is not an array, string, or null. `Router::url()`
+  was already the effective constraint, so this mostly surfaces bad input
+  earlier.
+* `sendContent()` — a non-string, non-null template, such as an object without
+  `__toString()` or an array.
+* `set()` — a `$name` that is neither a string nor an array.
+* `entityErrorVars()` — anything that is not an entity or a `Form`, **including
+  a plain array**. `generateErrorMessage()` accepts arrays but
+  `entityErrorVars()` never did: it called `$entity->getErrors()`
+  unconditionally, so an array previously failed with "Call to a member function
+  getErrors() on array". That failure is now a `TypeError` at the call boundary.
+* `generateErrorMessage()` — see the behaviour change below.
+
+Scalar coercion follows PHP's normal rule: strictness is decided by the file
+making the call, not by this plugin. If your calling file does **not** declare
+`strict_types=1`, passing `42` to `sendContent()` or `set()` still coerces to
+`'42'` as before. If it does, that call now throws. Objects, arrays, and `null`
+where the type does not allow them throw either way.
+
+### 3. `generateErrorMessage()` no longer returns `''` for unsupported input
+
+In 5.x, `generateErrorMessage()` ended with an `else` branch that returned an
+empty string for any argument that was not an array, an `EntityInterface`, or a
+`Form` — so `generateErrorMessage(null)`, `generateErrorMessage('oops')` or
+`generateErrorMessage($someRandomObject)` quietly produced `''` and the caller
+carried on.
+
+With the parameter typed as `EntityInterface|Form|array`, that input is rejected
+at the call boundary with a `TypeError` and the branch became unreachable, so it
+has been removed. If your code relied on passing loosely-typed input and getting
+an empty string back, guard the call yourself:
+
+```php
+$message = ($errors instanceof EntityInterface || $errors instanceof Form || is_array($errors))
+    ? $this->Json->generateErrorMessage($errors)
+    : '';
+```
+
+An entity or form with no errors still returns `''`, and an empty array still
+returns `''`, exactly as before. Only genuinely unsupported types changed.
+
 ## Installation
 
 In your CakePHP root directory: run the following command:

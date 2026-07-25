@@ -160,7 +160,7 @@ class JsonComponent extends Component
      *   string.
      * @return void
      */
-    public function redirect($url): void
+    public function redirect(array|string|null $url): void
     {
         $this->Controller->set('_redirect', Router::url($url));
     }
@@ -172,7 +172,7 @@ class JsonComponent extends Component
      * @param string|null $template
      * @return void
      */
-    public function sendContent($template = null): void
+    public function sendContent(?string $template = null): void
     {
         $this->prepareVars();
         $builder = $this->Controller->viewBuilder();
@@ -196,7 +196,7 @@ class JsonComponent extends Component
      *   Unused if $name is an associative array, otherwise serves as the values to $name's keys.
      * @return void
      */
-    public function set($name, $value = null): void
+    public function set(array|string $name, mixed $value = null): void
     {
         $this->Controller->set($name, $value);
         if (is_array($name)) {
@@ -222,7 +222,7 @@ class JsonComponent extends Component
      * @param \Cake\Datasource\EntityInterface|\Cake\Form\Form $entity
      * @return void
      */
-    public function entityErrorVars($entity): void
+    public function entityErrorVars(EntityInterface|Form $entity): void
     {
         $this->set('field_errors', $entity->getErrors());
         $this->setError($this->generateErrorMessage($entity));
@@ -234,17 +234,15 @@ class JsonComponent extends Component
      * @param \Cake\Datasource\EntityInterface|\Cake\Form\Form|array $entity
      * @return string A message detailing all the field errors, or an empty string if no errors
      */
-    public function generateErrorMessage($entity): string
+    public function generateErrorMessage(EntityInterface|Form|array $entity): string
     {
         if (is_array($entity)) {
             $entityErrors = $entity; // send an array of errors e.g. in manual controller validation
-        } elseif ($entity instanceof EntityInterface || $entity instanceof Form) {
+        } else {
             if (!$entity->getErrors()) {
                 return '';
             }
             $entityErrors = $entity->getErrors();
-        } else {
-            return '';
         }
         $error_msg = '';
 
