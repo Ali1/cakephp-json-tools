@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<ruleset name="PHP_CodeSniffer">
+    <!--
+         Useful links:
+         * https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage
+         * https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xml.dist
+         * https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml
+    -->
+    <description>PHP CodeSniffer Configuration</description>
+
+    <!-- Coding standard to use -->
+    <rule ref="./vendor/cakephp/cakephp-codesniffer/CakePHP">
+        <exclude name="Generic.Commenting.Todo" />
+    </rule>
+
+    <!-- The Route trait is public API of a released plugin; renaming it to
+         RouteTrait would be a breaking change, so exempt just that file. -->
+    <rule ref="CakePHP.NamingConventions.ValidTraitName">
+        <exclude-pattern>*/src/Model/Entity/Traits/Route\.php</exclude-pattern>
+    </rule>
+
+    <!-- Same reasoning for native type hints on public API. This plugin is
+         released on Packagist (tags up to 5.0.3), and narrowing a public
+         parameter from untyped to a union is a breaking change for callers
+         passing anything outside it. The @param/@return docblocks carry the
+         same information without the BC break, so require documentation
+         rather than native hints on the published surface. Drop these two
+         exclusions when the next major version is cut. Sentry's ruleset
+         makes the same trade for its controllers. -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>*/src/*</exclude-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>*/src/*</exclude-pattern>
+    </rule>
+
+    <!-- Do not fail on warnings -->
+    <config name="ignore_warnings_on_exit" value="1" />
+
+    <!-- Assume UTF-8 -->
+    <config name="encoding" value="UTF-8" />
+
+    <!-- Use colors -->
+    <arg name="colors" />
+
+    <!-- Show progress -->
+    <arg value="p" />
+
+    <!-- Files and directories to check -->
+    <file>./src/</file>
+    <file>./tests/</file>
+
+    <!-- Exclude patterns -->
+    <exclude-pattern>*\.min\.(css|js)</exclude-pattern>
+</ruleset>

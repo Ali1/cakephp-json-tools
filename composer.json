@@ -38,7 +38,9 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf"
     },
     "config": {
         "allow-plugins": {

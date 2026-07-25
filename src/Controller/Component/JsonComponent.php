@@ -1,12 +1,11 @@
 <?php
-
 declare(strict_types=1);
 
 namespace JsonTools\Controller\Component;
 
-use Cake\Controller\Controller;
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
+use Cake\Controller\Controller;
 use Cake\Datasource\EntityInterface;
 use Cake\Form\Form;
 use Cake\Http\Exception\BadRequestException;
@@ -56,13 +55,13 @@ class JsonComponent extends Component
     {
         $this->httpErrorStatusOnError = $option;
     }
+
     /**
      * By default, the json output contains a boolean 'error' key and the 'message' key is intended to contain the error message.
      * Setting this to true, will also set the 'error' key to a string message as defined in $this->Json->setError('message').
      *
      * @param bool $option
      */
-
     public function setErrorMessageInErrorKey(bool $option): void
     {
         $this->errorMessageInErrorKey = $option;
@@ -103,13 +102,13 @@ class JsonComponent extends Component
      * Will also execute $this->Json->prepareVars too by default
      *
      * @param bool $autoPrepare (optional), true by default, set to false to prevent running Json->prepareVars
-     *
      * @return bool
      */
     public function isJsonSubmit(bool $autoPrepare = true): bool
     {
         $request = $this->Controller->getRequest();
-        if ($request->is(['get', 'post', 'put'])
+        if (
+            $request->is(['get', 'post', 'put'])
             && $request->is('ajax')
             && ($request->is('json')
                 || $request->accepts('application/json')
@@ -143,7 +142,6 @@ class JsonComponent extends Component
      * Will also run Json->prepareVars()
      *
      * @throws \Cake\Http\Exception\BadRequestException
-     *
      * @return void
      */
     public function requireJsonSubmit(): void
@@ -156,11 +154,10 @@ class JsonComponent extends Component
     /**
      * Sets the _redirect key in the Json output. The client must be configured to handle this.
      *
-     * @param string|array|null $url An array specifying any of the following:
+     * @param array|string|null $url An array specifying any of the following:
      *   'controller', 'action', 'plugin' additionally, you can provide routed
      *   elements or query string parameters. If string it can be name any valid url
      *   string.
-     *
      * @return void
      */
     public function redirect($url): void
@@ -172,9 +169,7 @@ class JsonComponent extends Component
      * Used to send template content in json under the content key
      *
      * @todo auto-detect template file if null
-     *
      * @param string|null $template
-     *
      * @return void
      */
     public function sendContent($template = null): void
@@ -196,10 +191,9 @@ class JsonComponent extends Component
      *   method will also ensure the serialize view Option (previously _serialize viewVar) contains the key, hence ensure that the json response contains the
      *   variable you are setting.
      *
-     * @param string|array $name A string or an array of data.
+     * @param array|string $name A string or an array of data.
      * @param mixed $value Value in case $name is a string (which then works as the key).
      *   Unused if $name is an associative array, otherwise serves as the values to $name's keys.
-     *
      * @return void
      */
     public function set($name, $value = null): void
@@ -226,7 +220,6 @@ class JsonComponent extends Component
      *      Give field_errors in the json with an array of validation errors
      *
      * @param \Cake\Datasource\EntityInterface|\Cake\Form\Form $entity
-     *
      * @return void
      */
     public function entityErrorVars($entity): void
@@ -239,7 +232,6 @@ class JsonComponent extends Component
      * Returns a string message from a CakePHP array of field errors i.e. $entity->getErrors()
      *
      * @param \Cake\Datasource\EntityInterface|\Cake\Form\Form|array $entity
-     *
      * @return string A message detailing all the field errors, or an empty string if no errors
      */
     public function generateErrorMessage($entity): string
@@ -263,6 +255,7 @@ class JsonComponent extends Component
             }
             $error_msg = substr($error_msg, 0, -1);
             $error_msg .= '. ';
+
             return $error_msg;
         };
 
@@ -293,7 +286,6 @@ class JsonComponent extends Component
      *
      * @param string $message
      * @param bool|null $httpError true to also return a HTTP 400 Bad Request
-     *
      * @return void
      */
     public function setError(string $message, ?bool $httpError = null): void
@@ -317,7 +309,6 @@ class JsonComponent extends Component
      * $this->Json->set shortcut to set the message key
      *
      * @param string $message
-     *
      * @return void
      */
     public function setMessage(string $message): void

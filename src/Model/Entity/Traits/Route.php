@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace JsonTools\Model\Entity\Traits;
 
 use Cake\Routing\Router;
@@ -9,7 +11,6 @@ use Cake\Utility\Inflector;
  * The route action can be overwritten by defining function routeActionAndId in the Entity class
  *
  * @package App\Model\Entity\Traits
- *
  * @property array $route
  * @property array $classification
  * @property array $long_identifier
@@ -18,9 +19,9 @@ use Cake\Utility\Inflector;
 trait Route
 {
     /**
-     * @return mixed|string
+     * @return string
      */
-    private static function className()
+    private static function className(): string
     {
         $classname = static::class;
         if (preg_match('@\\\\([\w]+)$@', $classname, $matches)) {
@@ -33,7 +34,7 @@ trait Route
     /**
      * @return string
      */
-    private function _getClassification()
+    private function _getClassification(): string
     {
         $classname = static::className();
 
@@ -43,7 +44,7 @@ trait Route
     /**
      * @return array
      */
-    protected function _getRoute()
+    protected function _getRoute(): array
     {
         $classname = static::className();
         $baseRoute = [
@@ -58,7 +59,7 @@ trait Route
     /**
      * @return array
      */
-    private function routeActionAndId()
+    private function routeActionAndId(): array
     {
         return [
             'action' => 'view',
@@ -69,7 +70,7 @@ trait Route
     /**
      * @return string
      */
-    protected function _getLongIdentifier()
+    protected function _getLongIdentifier(): string
     {
         // e.g. "Appointment 2917"
         return $this->_getClassification() . ' ' . $this->id;
@@ -78,7 +79,7 @@ trait Route
     /**
      * @return string
      */
-    protected function _getUrl()
+    protected function _getUrl(): string
     {
         return Router::url($this->route, true);
     }

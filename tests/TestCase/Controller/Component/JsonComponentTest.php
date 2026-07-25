@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace JsonTools\Test\TestCase\Controller\Component;
@@ -35,7 +34,7 @@ class JsonComponentTest extends TestCase
         $this->assertSame('application/json', $this->Controller->getResponse()->getType());
         $this->assertSame(
             ['answer', 'error', 'field_errors', 'message', 'debug', '_redirect', 'content'],
-            $this->Controller->viewBuilder()->getOption('serialize')
+            $this->Controller->viewBuilder()->getOption('serialize'),
         );
 
         $this->assertEquals([
@@ -97,7 +96,7 @@ class JsonComponentTest extends TestCase
         $this->assertSame('application/json', $this->Controller->getResponse()->getType());
         $this->assertSame(
             ['error', 'field_errors', 'message', 'debug', '_redirect', 'content'],
-            $this->Controller->viewBuilder()->getOption('serialize')
+            $this->Controller->viewBuilder()->getOption('serialize'),
         );
 
         $json = $this->renderJson();
@@ -181,7 +180,7 @@ class JsonComponentTest extends TestCase
         $this->Controller->setRequest(
             $this->Controller->getRequest()
                 ->withParam('controller', 'JsonComponentTest')
-                ->withParam('action', $action)
+                ->withParam('action', $action),
         );
         $this->Controller->invokeAction($this->Controller->getAction(), []);
     }
