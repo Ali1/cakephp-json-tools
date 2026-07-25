@@ -1,10 +1,8 @@
 # CakePHP Json Tools Plugin
 
 [![Framework](https://img.shields.io/badge/Framework-CakePHP%205.x-orange.svg)](http://cakephp.org)
-[![license](https://img.shields.io/github/license/ali1/cakephp-json-tools.svg?maxAge=2592000)](https://github.com/LeWestopher/cakephp-monga/blob/master/LICENSE)
-[![Github All Releases](https://img.shields.io/packagist/dt/ali1/cakephp-brute-force-protection.svg?maxAge=2592000)](https://packagist.org/packages/ali1/cakephp-brute-force-protection)
-[![Travis](https://img.shields.io/travis/ali1/cakephp-brute-force-protection.svg?maxAge=2592000)](https://travis-ci.org/ali1/cakephp-brute-force-protection)
-[![Coverage Status](https://coveralls.io/repos/github/ali1/cakephp-brute-force-protection/badge.svg)](https://coveralls.io/github/ali1/cakephp-brute-force-protection)
+[![license](https://img.shields.io/github/license/ali1/cakephp-json-tools.svg?maxAge=2592000)](https://github.com/ali1/cakephp-json-tools/blob/master/LICENSE)
+[![Total Downloads](https://img.shields.io/packagist/dt/ali1/cakephp-json-tools.svg?maxAge=2592000)](https://packagist.org/packages/ali1/cakephp-json-tools)
 
 A CakePHP plugin to assist with creating Json responses from controllers. 
 
