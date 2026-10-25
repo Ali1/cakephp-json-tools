@@ -5,3 +5,5 @@ vendor/
 composer.lock
 .phpunit.cache/
 /phpcs.xml
+/.local-evidence.json
+/.local-certification-runner/
